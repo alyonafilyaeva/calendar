@@ -9,131 +9,67 @@ import {
   Button,
   Radio,
   ScrollView,
+  Form,
 } from "react-native";
 import { CheckBox } from "react-native-elements";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { Formik, Field, Form } from "formik";
-import React, { useEffect, useState } from "react";
-import {
-  categories,
-  family,
-  times,
-  baseUrl,
-  token,
-} from "../constants/constants";
+import React, { useState } from "react";
+import { categories, family, times } from "../constants/constants";
 import { RadioButton } from "react-native-paper";
-import { SelectList } from "react-native-dropdown-select-list";
+import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { styles } from "../styles/StylesSheet";
 import { useRouter } from "expo-router";
 import AddFamilyModal from "../components/addModals/addFamilyModal";
 import AddTimingModal from "../components/addModals/addTimingModal";
 import AddElementsModal from "../components/addModals/addElementsModal";
-import axios from "axios";
-import AddPeriodModal from "../components/addModals/addPeriodModal";
 
 export default function AddEvent() {
   const router = useRouter();
+
   let [categoryID, setCategory] = useState("0");
   let [addFamilyModal, setAddFamilyModal] = useState(false);
   let [addTimingModal, setAddTimingModal] = useState(false);
   let [addElementsModal, setAddElementsModal] = useState(false);
-  let [addPeriodModal, setAddPeriodModal] = useState(false);
   let [comment, setComment] = useState(false);
   let [selectedValue, setSelectedValue] = useState("one");
-  let [children, setChildren] = useState([]);
-  let [childId, setChildId] = useState(0);
-  let [locationId, setLocationId] = useState();
-  let [locations, setLocations] = useState([]);
-  let [days, setDays] = useState([]);
-  let [startingDay, setStartingDay] = useState();
-  let [endingDay, setEndingDay] = useState();
-  let location = React.createRef();
 
-  let formatDate = (date) => {
-    let [day, month, year] = date.split(".");
-    return `${year}-${month}-${day}`;
+  let [child, setChild] = useState("");
+  let [location, setLocation] = useState("");
+  let [owner, setOwner] = useState();
+  let [mainName, setMainName] = useState("");
+  let [eventDate, setEventDate] = useState();
+  let [eventTimeStart, setEventTimeStart] = useState();
+  let [eventTimeFinish, setEventTimeFinish] = useState();
+  let [eventDescription, setEventDescription] = useState();
+
+  let onInputChange = (e) => {
+    switch (e.target.name) {
+      case mainName:
+        setMainName(e.target.value);
+        break;
+      case child:
+        setChild(e.target.value);
+        break;
+      case eventDate:
+        setEventDate(e.target.value);
+        break;
+      case eventTimeStart:
+        setEventTimeStart(e.target.value);
+        break;
+      case eventTimeFinish:
+        setEventTimeFinish(e.target.value);
+        break;
+      case eventDescription:
+        setEventDescription(e.target.value);
+        break;
+      default:
+        break;
+    }
   };
 
-  const fetchChildren = () => {
-    axios
-      .get(`${baseUrl}/users/children`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setChildren(response.data);
-      });
-
-    axios
-      .get(`${baseUrl}/locations`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setLocations(response.data);
-        console.log(locations);
-      });
-  };
-  useEffect(fetchChildren, []);
-
-  const createEvent = (values) => {
-    selectedValue === "one"
-      ? axios
-          .post(
-            `${baseUrl}/events/`,
-            {
-              main_name: values.main_name,
-              child: childId,
-              location: location.current.value,
-              event_date: formatDate(values.event_date),
-              event_time_start: values.event_time_start,
-              event_time_finish: values.event_time_finish,
-              event_description: values.event_description,
-            },
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          )
-          .then((response) => {
-            console.log(response);
-          })
-      : axios
-          .post(
-            `${baseUrl}/events/schedule/`,
-            {
-              main_name: values.main_name,
-              child: childId,
-              location: location.current.value,
-              event_description: values.event_description,
-              schedule: {
-                days: days,
-                date_start: startingDay,
-                date_finish: endingDay,
-              },
-            },
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          )
-          .then((response) => {
-            console.log("Событие с расписанием", response);
-          });
-    router.push("/");
-  };
-  console.log(startingDay, endingDay)
   return (
     <ScrollView style={styles.container}>
       <View style={styles.topPanel}>
@@ -160,20 +96,7 @@ export default function AddEvent() {
         </TouchableOpacity>
       </View>
 
-      <Formik
-        style={{ marginTop: styles.marginTopBlocks }}
-        initialValues={{
-          main_name: "",
-          child: childId,
-          location: locationId,
-          event_date: "",
-          event_time_start: "",
-          event_time_finish: "",
-          event_description: "",
-        }}
-        onSubmit={(values) => createEvent(values)}
-      >
-        {({ handleChange, handleBlur, handleSubmit, values }) => (
+      <Form style={{ marginTop: styles.marginTopBlocks }}>
           <View>
             <View>
               <Text style={{ fontSize: styles.fontSizeText, fontWeight: 700 }}>
@@ -181,9 +104,9 @@ export default function AddEvent() {
               </Text>
               <TextInput
                 style={styles.input}
-                onChangeText={handleChange("main_name")}
-                onBlur={handleBlur("main_name")}
-                value={values.main_name}
+                onChange={onInputChange}
+                name='mainName'
+                value={mainName}
                 placeholder="Название события"
               />
             </View>
@@ -205,8 +128,7 @@ export default function AddEvent() {
                     <TouchableOpacity style={styles.category}>
                       <Text
                         onPress={() => setCategory("1")}
-                        onChangeText={handleChange("category")}
-                        value={values.category}
+                        value={categoryID}
                       >
                         {item.title}
                       </Text>
@@ -237,15 +159,23 @@ export default function AddEvent() {
                   <FlatList
                     style={styles.familyItems}
                     horizontal={true}
-                    data={children}
+                    data={family}
                     renderItem={({ item }) => (
-                      <TouchableOpacity onPress={() => setChildId(item.id)}>
+                      <TouchableOpacity>
                         <View style={styles.familyItem}>
                           <Image
                             source={require("../assets/images/avatar.png")}
                           />
                           <Text style={{ fontSize: styles.fontSizeText }}>
                             {item.name}
+                          </Text>
+                          <Text
+                            style={{
+                              fontSize: styles.fontSizeText,
+                              color: styles.backgroundColorMain,
+                            }}
+                          >
+                            {item.type}
                           </Text>
                         </View>
                       </TouchableOpacity>
@@ -300,16 +230,16 @@ export default function AddEvent() {
                   <View style={styles.oneEvent}>
                     <TextInput
                       style={styles.dateInput}
-                      onChangeText={handleChange("event_date")}
-                      onBlur={handleBlur("event_date")}
-                      value={values.event_date}
+                      onChange={onInputChange}
+                      name='eventDate'
+                      value={eventDate}
                       placeholder="ДД/ММ/ГГ"
                     />
                     <TextInput
                       style={styles.timeInput}
-                      onChangeText={handleChange("event_time_start")}
-                      onBlur={handleBlur("event_time_start")}
-                      value={values.event_time_start}
+                      onChange={onInputChange}
+                      name='eventTimeStart'
+                      value={eventTimeStart}
                       placeholder="00:00"
                     />
                     <Text style={{ marginRight: styles.marginRightElements }}>
@@ -318,9 +248,9 @@ export default function AddEvent() {
                     </Text>
                     <TextInput
                       style={styles.timeInput}
-                      onChangeText={handleChange("event_time_finish")}
-                      onBlur={handleBlur("event_time_finish")}
-                      value={values.event_time_finish}
+                      onChange={onInputChange}
+                      name='eventTimeFinish'
+                      value={eventTimeFinish}
                       placeholder="00:00"
                     />
                   </View>
@@ -335,14 +265,11 @@ export default function AddEvent() {
                       }}
                     >
                       <Text>Расписание</Text>
-                      <Text>{days.length > 0 ? "Есть" : "Нет"}</Text>
+                      <Text>Нет</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.repeat}
-                      onPress={() => setAddPeriodModal(true)}
-                    >
-                      <Text>Повторять</Text>
-                      <Text>{endingDay ? 'Да': 'Нет'}</Text>
+                    <TouchableOpacity style={styles.repeat}>
+                      <Text>Повторяется</Text>
+                      <Text>Нет</Text>
                     </TouchableOpacity>
                   </View>
                 )}
@@ -417,15 +344,14 @@ export default function AddEvent() {
 
             <View style={{ marginTop: 32 }}>
               <Text style={{ fontSize: 14, fontWeight: 700 }}>Адрес</Text>
-              <select style={styles.input} name="locations" ref={location}>
-                <option value="Адрес"></option>
-                {locations.map((item) => (
-                  <option value={item.id}>{item.address}</option>
-                ))}
-              </select>
+              <TextInput
+                style={styles.input}
+                onChange={onInputChange}
+                name='location'
+                value={location}
+                placeholder="Адрес"
+              />
             </View>
-
-            {/* <SelectList data={locations}/> */}
 
             {comment && (
               <View>
@@ -436,9 +362,9 @@ export default function AddEvent() {
                 </Text>
                 <TextInput
                   style={styles.input}
-                  onChangeText={handleChange("event_description")}
-                  onBlur={handleBlur("event_description")}
-                  value={values.event_description}
+                  onChange={onInputChange}
+                  name='eventDescription'
+                  value={eventDescription}
                   placeholder="Текст"
                 />
               </View>
@@ -450,12 +376,11 @@ export default function AddEvent() {
             >
               <Text style={{ fontWeight: 700 }}>Добавить элемент</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonGrey} onPress={handleSubmit}>
+            <TouchableOpacity style={styles.buttonGrey}>
               <Text style={{ fontWeight: 700 }}>Добавить событие</Text>
             </TouchableOpacity>
           </View>
-        )}
-      </Formik>
+      </Form>
       <AddFamilyModal
         addFamilyModal={addFamilyModal}
         setAddFamilyModal={setAddFamilyModal}
@@ -463,21 +388,11 @@ export default function AddEvent() {
       <AddTimingModal
         addTimingModal={addTimingModal}
         setAddTimingModal={setAddTimingModal}
-        days={days}
-        setDays={setDays}
       />
       <AddElementsModal
         addElementsModal={addElementsModal}
         setAddElementsModal={setAddElementsModal}
         setComment={setComment}
-      />
-      <AddPeriodModal
-        addPeriodModal={addPeriodModal}
-        setAddPeriodModal={setAddPeriodModal}
-        startingDay={startingDay}
-        setStartingDay={setStartingDay}
-        endingDay={endingDay}
-        setEndingDay={setEndingDay}
       />
     </ScrollView>
   );
