@@ -148,7 +148,7 @@ export default function Index() {
             }}
           />
         ) : (
-          <CalendarProvider style={{ marginTop: 20 }} date="2024-01-12">
+          <CalendarProvider style={{ marginTop: 20 }} date={new Date().toISOString().slice(0, 10)}>
             <WeekCalendar
               firstDay={1}
               hideDayNames={false}
@@ -175,7 +175,7 @@ export default function Index() {
           style={{ position: "absolute", left: wp(85), top: hp(90) }}
         >
           <Image
-            style={styles.plus}
+            style={[styles.plus, styles.click]}
             source={require("../assets/images/plus.png")}
           />
         </TouchableOpacity>

@@ -14,7 +14,15 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { family, addresses, categories, colors, baseUrl, token, initialProfile} from "../constants/constants";
+import {
+  family,
+  addresses,
+  categories,
+  colors,
+  baseUrl,
+  token,
+  initialProfile,
+} from "../constants/constants";
 import { styles } from "../styles/StylesSheet";
 import Categories from "../components/categories";
 import AddCategoryModal from "../components/addModals/addCategoryModal";
@@ -45,7 +53,7 @@ export default function Profile() {
       })
       .then((response) => {
         setProfile(response.data);
-        console.log(response.data)
+        console.log(response.data);
       });
   };
   useEffect(fetchProfile, []);
@@ -113,6 +121,7 @@ export default function Profile() {
             display: "flex",
             flexDirection: "row",
             justifyContent: "flex-start",
+            marginTop: 10,
           }}
         >
           <FlatList
@@ -122,10 +131,19 @@ export default function Profile() {
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => setEditFamilyModal(true)}>
                 <View style={styles.familyItem}>
-                  <Image source={require("../assets/images/avatar.png")} />
-                  <Text style={{ fontSize: styles.fontSizeText }}>
+                  <View style={styles.avatar}>
+                    {
+                      (item.name == "Петя" ? (
+                        <Image source={require("../assets/images/Boy.png")} />
+                      ) : (
+                        <Image source={require("../assets/images/Girl.png")} />
+                      ))
+                    }
+                    <Text style={{ fontSize: styles.fontSizeText }}>
                     {item.name}
                   </Text>
+                  </View>
+                  
                 </View>
                 <EditFamilyModal
                   editFamilyModal={editFamilyModal}
@@ -135,16 +153,19 @@ export default function Profile() {
               </TouchableOpacity>
             )}
           />
-          <TouchableOpacity onPress={() => setAddFamilyModal(true)}>
-            <View style={styles.familyItem}>
-              <Image source={require("../assets/images/avatar.png")} />
-              <Image
-                style={{ position: "absolute", top: 15 }}
-                source={require("../assets/images/plus.png")}
-              />
-              <Text style={{ fontSize: styles.fontSizeText }}>Добавить</Text>
-            </View>
-          </TouchableOpacity>
+          <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => setAddFamilyModal(true)}
+        >
+          <Image source={require("../assets/images/plus.png")} />
+          <Text
+            style={{
+              fontSize: styles.fontSizeText,
+            }}
+          >
+            Добавить
+          </Text>
+        </TouchableOpacity>
         </View>
       </View>
 
@@ -181,9 +202,7 @@ export default function Profile() {
                     />
                   </TouchableOpacity>
                   <TouchableOpacity onPress={() => setEditAddressModal(true)}>
-                    <Image
-                      source={require("../assets/images/edit.png")}
-                    />
+                    <Image source={require("../assets/images/edit.png")} />
                   </TouchableOpacity>
                 </View>
               </View>

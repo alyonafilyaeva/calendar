@@ -110,12 +110,18 @@ export default function Event() {
             }}
           >
             <TouchableOpacity>
-              <View style={styles.familyItem}>
-                <Image source={require("../assets/images/avatar.png")} />
-                <Text style={{ fontSize: styles.fontSizeText }}>
-                  {event.child.name}
-                </Text>
-              </View>
+            <View style={styles.avatar}>
+                    {
+                      (event.child.name == "Петя" ? (
+                        <Image source={require("../assets/images/Boy.png")} />
+                      ) : (
+                        <Image source={require("../assets/images/Girl.png")} />
+                      ))
+                    }
+                    <Text style={{ fontSize: styles.fontSizeText, marginLeft: 10 }}>
+                    {event.child.name}
+                  </Text>
+                  </View>
             </TouchableOpacity>
           </View>
         </View>
@@ -168,7 +174,7 @@ export default function Event() {
             <TouchableOpacity>
               <Image
                 /* style={{ height: 30, width: 30 }} */
-                source={require("../assets/images/edit.png")}
+                source={require("../assets/images/copy.png")}
               />
             </TouchableOpacity>
           </View>

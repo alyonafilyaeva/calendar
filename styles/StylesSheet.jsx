@@ -52,7 +52,8 @@ export const styles = StyleSheet.create({
   plus: {
     borderRadius: borderRadius,
     borderWidth: 1,
-    backgroundColor: backgroundColorMain,
+    backgroundColor: backgroundColor,
+    borderColor: backgroundColorMain,
     alignItems: "center",
     justifyContent: "center",
     marginRight: 15,
@@ -84,7 +85,7 @@ export const styles = StyleSheet.create({
   },
   familyItem: {
     display: "flex",
-    flexDirection: "column",
+    flexDirection: "row",
     alignItems: "center",
     marginRight: 20,
   },
@@ -113,7 +114,8 @@ export const styles = StyleSheet.create({
     justifyContent: "space-around",
     borderRadius: borderRadius,
     borderWidth: 1,
-    backgroundColor: "#EFEAEA",
+    borderColor: backgroundColorMain,
+    backgroundColor: backgroundColor,
     alignItems: "center",
     paddingLeft: 10,
     paddingRight: 10,
@@ -298,5 +300,17 @@ export const styles = StyleSheet.create({
   click: {
     backgroundColor: backgroundColorMain,
     color: '#000'
+  },
+  avatar: {
+    display: "flex",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems:  'center',
+    backgroundColor: backgroundColor,
+    borderRadius: 50,
+    borderColor: backgroundColorMain,
+    borderWidth:1,
+    padding: 12,
+    marginBottom: 5
   }
 });

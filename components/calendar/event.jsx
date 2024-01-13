@@ -23,7 +23,7 @@ export default function Event({ id, child }) {
   };
 
   useEffect(fetchEvents, []);
-
+  console.log(event);
   return (
     <TouchableOpacity
       onPress={() =>
@@ -60,8 +60,14 @@ export default function Event({ id, child }) {
             </View>
           </View>
         </View>
-
-        <Text>{child}</Text>
+        <View style={{justifyContent: 'center', alignItems: 'center'}}>
+          {child == "Петя" ? (
+            <Image source={require("../../assets/images/Boy.png")} />
+          ) : (
+            <Image source={require("../../assets/images/Girl.png")} />
+          )}
+          <Text>{child}</Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
