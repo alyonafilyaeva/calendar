@@ -35,34 +35,37 @@ import AddElementsModal from "../components/addModals/addElementsModal";
 import axios from "axios";
 import AddPeriodModal from "../components/addModals/addPeriodModal";
 import * as SecureStore from "expo-secure-store";
+import { useLocalSearchParams } from "expo-router";
 
-export default function AddEvent() {
+export default function EditEvent() {
   const router = useRouter();
-  const [categoryID, setCategory] = useState("0");
+  let { id } = useLocalSearchParams();
   const [addFamilyModal, setAddFamilyModal] = useState(false);
-  const [addTimingModal, setAddTimingModal] = useState(false);
   const [addElementsModal, setAddElementsModal] = useState(false);
-  const [addPeriodModal, setAddPeriodModal] = useState(false);
   const [comment, setComment] = useState(false);
   const [selectedValue, setSelectedValue] = useState("one");
   const [children, setChildren] = useState([]);
   const [childId, setChildId] = useState(0);
-  const [locationId, setLocationId] = useState();
+  const [locationId, setLocationId] = useState(0);
   const [locations, setLocations] = useState([]);
+  const [mainName, setMainName] = useState("");
+  const [eventDate, setEventDate] = useState("");
+  const [eventTimeStart, setEventTimeStart] = useState("");
+  const [eventTimeFinish, setEventTimeFinish] = useState("");
+  const [eventDescription, setEventDescription] = useState("");
   const [days, setDays] = useState([]);
-  const [startingDay, setStartingDay] = useState();
-  const [endingDay, setEndingDay] = useState();
   const [token, setToken] = useState("");
+  const [event, setEvent] = useState();
   const [isEnabledBefore, setIsEnabledBefore] = useState(false);
   const toggleSwitchBefore = () =>
     setIsEnabledBefore((previousState) => !previousState);
   const [isEnabledAfter, setIsEnabledAfter] = useState(false);
   const toggleSwitchAfter = () =>
     setIsEnabledAfter((previousState) => !previousState);
-console.log(days)
-
+  console.log("days are", days);
+  console.log("event is", event);
   let formatDate = (date) => {
-    let [day, month, year] = date.split(".");
+    let [day, month, year] = date?.split(".");
     return `${year}-${month}-${day}`;
   };
 
@@ -79,6 +82,24 @@ console.log(days)
   }));
 
   const fetchChildren = () => {
+    axios
+      .get(`${baseUrl}/events/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setEvent(response.data);
+        setChildId(response.data.child.id);
+        setLocationId(response.data.location.id);
+        setMainName(response.data.main_name);
+        setEventDate(response.data.event_date);
+        setEventTimeStart(response.data.event_time_start);
+        setEventTimeFinish(response.data.event_time_finish);
+        setEventDescription(response.data.event_description);
+      });
+
     axios
       .get(`${baseUrl}/users/children`, {
         headers: {
@@ -99,62 +120,58 @@ console.log(days)
       })
       .then((response) => {
         setLocations(response.data);
-        console.log(locations);
       });
+    console.log("все получено");
   };
   useEffect(() => {
     fetchChildren();
   }, [token]);
 
-  const createEvent = (values) => {
-    selectedValue === "one"
-      ? axios
-          .post(
-            `${baseUrl}/events/`,
-            {
-              main_name: values.main_name,
-              child: childId,
-              location: locationId,
-              event_date: formatDate(values.event_date),
-              event_time_start: values.event_time_start,
-              event_time_finish: values.event_time_finish,
-              event_description: values.event_description,
-            },
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          )
-          .then((response) => {
-            console.log(response);
-          })
-      : axios
-          .post(
-            `${baseUrl}/events/schedule/`,
-            {
-              main_name: values.main_name,
-              child: childId,
-              location: locationId,
-              event_description: values.event_description,
-              schedule: {
-                days: days,
-                date_start: startingDay,
-                date_finish: endingDay,
-              },
-            },
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          )
-          .then((response) => {
-            console.log("Событие с расписанием", response);
-          });
-    router.push("/main");
+  const editEvent = () => {
+    axios({
+      method: "put",
+      url: `${baseUrl}/events/${event.id}/`,
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      data: {
+        'main_name': 'lll',
+        'child': 2,
+        'location': 2,
+        'event_date': '2024-01-21',
+        'event_time_start': '10:00',
+        'event_time_finish': '12:00',
+        'event_description': 'lll'
+      }
+  }).then(response => {
+    if (response.status === 201) {
+      router.push("/main");
+    }
+  })
+    /* axios
+      .put(
+        `${baseUrl}/events/${event.id}/`,
+        {data: 
+          {main_name: mainName,
+          child: childId,
+          location: locationId,
+          event_date: formatDate(eventDate),
+          event_time_start: eventTimeStart,
+          event_time_finish: eventTimeFinish,
+          event_description: eventDescription,}
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((response) => {
+        console.log('response put',response);
+      });
+ */
+    
   };
 
   return (
@@ -173,9 +190,9 @@ console.log(days)
             justifyContent: "flex-start",
           }}
         >
-          Добавить событие
+          Редактировать событие
         </Text>
-        <TouchableOpacity onPress={() => router.push("home")}>
+        <TouchableOpacity /* onPress={() => router.push("home")} */>
           <Image
             /* style={{ height: 30, width: 30 }} */
             source={require("../assets/images/done.png")}
@@ -186,17 +203,17 @@ console.log(days)
       <Formik
         style={{ marginTop: styles.marginTopBlocks }}
         initialValues={{
-          main_name: "",
+          main_name: mainName,
           child: childId,
           location: locationId,
-          event_date: "",
-          event_time_start: "",
-          event_time_finish: "",
-          event_description: "",
+          event_date: eventDate,
+          event_time_start: eventTimeStart,
+          event_time_finish: eventTimeFinish,
+          event_description: eventDescription,
         }}
-        onSubmit={(values) => createEvent(values)}
+        onSubmit={() => editEvent()}
       >
-        {({ handleChange, handleBlur, handleSubmit, values }) => (
+        {({ handleChange, handleSubmit, values }) => (
           <View>
             <View>
               <Text style={{ fontSize: styles.fontSizeText, fontWeight: 700 }}>
@@ -204,10 +221,8 @@ console.log(days)
               </Text>
               <TextInput
                 style={styles.input}
-                onChangeText={handleChange("main_name")}
-                onBlur={handleBlur("main_name")}
-                value={values.main_name}
-                placeholder="Название события"
+                onChangeText={setMainName}
+                value={mainName}
               />
             </View>
             <View style={{ marginTop: styles.marginTopBlocks }}>
@@ -224,68 +239,25 @@ console.log(days)
                   Разовое событие
                 </Text>
               </View>
-              <View style={styles.radioButton}>
-                <RadioButton
-                  value="option1"
-                  status={selectedValue === "repeat" ? "checked" : "unchecked"}
-                  onPress={() => setSelectedValue("repeat")}
-                  color="#2688EB"
-                />
-                <Text
-                  style={{ fontSize: styles.fontSizeText, fontWeight: 700 }}
-                >
-                  Повторяющееся событие
-                </Text>
-              </View>
 
               {selectedValue === "one" && (
                 <View style={styles.oneEvent}>
                   <TextInput
                     style={styles.dateInput}
-                    onChangeText={handleChange("event_date")}
-                    onBlur={handleBlur("event_date")}
-                    value={values.event_date}
-                    placeholder="ДД/ММ/ГГ"
+                    onChangeText={setEventDate}
+                    value={eventDate}
                   />
                   <TextInput
                     style={styles.timeInput}
-                    onChangeText={handleChange("event_time_start")}
-                    onBlur={handleBlur("event_time_start")}
-                    value={values.event_time_start}
-                    placeholder="00:00"
+                    onChangeText={setEventTimeStart}
+                    value={eventTimeStart.slice(0, 5)}
                   />
-                  <Text style={{ marginRight: styles.marginRightElements }}>
-                    {" "}
-                    —{" "}
-                  </Text>
+                  <Text style={{ marginRight: 8 }}> — </Text>
                   <TextInput
                     style={styles.timeInput}
-                    onChangeText={handleChange("event_time_finish")}
-                    onBlur={handleBlur("event_time_finish")}
-                    value={values.event_time_finish}
-                    placeholder="00:00"
+                    onChangeText={setEventTimeFinish}
+                    value={eventTimeFinish.slice(0, 5)}
                   />
-                </View>
-              )}
-
-              {selectedValue === "repeat" && (
-                <View style={styles.repeatEvent}>
-                  <TouchableOpacity
-                    style={styles.timing}
-                    onPress={() => {
-                      setAddTimingModal(true);
-                    }}
-                  >
-                    <Text>Расписание</Text>
-                    <Text>{days.length > 0 ? "Есть" : "Нет"}</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.repeat}
-                    onPress={() => setAddPeriodModal(true)}
-                  >
-                    <Text>Повторять</Text>
-                    <Text>{endingDay ? "Да" : "Нет"}</Text>
-                  </TouchableOpacity>
                 </View>
               )}
             </View>
@@ -400,7 +372,7 @@ console.log(days)
               >
                 <Switch
                   trackColor={{ false: "#EFEAEA", true: "#ADB9E3" }}
-                  thumbColor={!isEnabledBefore ? "#F2F3F5" : "#313B97"}
+                  thumbColor={!isEnabledBefore ? "#F2F3F5" : "red"}
                   onValueChange={toggleSwitchBefore}
                   value={isEnabledBefore}
                 />
@@ -562,8 +534,11 @@ console.log(days)
                 placeholder="Адрес"
                 searchPlaceholder="Найти адрес"
                 save="key"
-                boxStyles={{borderRadius: 20, borderColor: "#ADB9E3"}}
-                dropdownItemStyles={{borderRadius: 20, borderColor: "#ADB9E3"}}
+                boxStyles={{ borderRadius: 20, borderColor: "#ADB9E3" }}
+                dropdownItemStyles={{
+                  borderRadius: 20,
+                  borderColor: "#ADB9E3",
+                }}
               />
             </View>
 
@@ -576,22 +551,21 @@ console.log(days)
                 </Text>
                 <TextInput
                   style={styles.input}
-                  onChangeText={handleChange("event_description")}
-                  onBlur={handleBlur("event_description")}
-                  value={values.event_description}
-                  placeholder="Текст"
+                  onChangeText={setEventDescription}
+                  value={eventDescription}
+                  placeholder={eventDescription}
                 />
               </View>
             )}
 
             <TouchableOpacity
-              style={styles.buttonWhite}
+              style={[styles.buttonWhite, { marginTop: 8 }]}
               onPress={() => setAddElementsModal(true)}
             >
               <Text style={{ fontWeight: 700 }}>Добавить элемент</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.buttonGrey} onPress={handleSubmit}>
-              <Text style={{ fontWeight: 700 }}>Добавить событие</Text>
+              <Text style={{ fontWeight: 700 }}>Изменить событие</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -600,24 +574,10 @@ console.log(days)
         addFamilyModal={addFamilyModal}
         setAddFamilyModal={setAddFamilyModal}
       />
-      <AddTimingModal
-        addTimingModal={addTimingModal}
-        setAddTimingModal={setAddTimingModal}
-        days={days}
-        setDays={setDays}
-      />
       <AddElementsModal
         addElementsModal={addElementsModal}
         setAddElementsModal={setAddElementsModal}
         setComment={setComment}
-      />
-      <AddPeriodModal
-        addPeriodModal={addPeriodModal}
-        setAddPeriodModal={setAddPeriodModal}
-        startingDay={startingDay}
-        setStartingDay={setStartingDay}
-        endingDay={endingDay}
-        setEndingDay={setEndingDay}
       />
     </ScrollView>
   );

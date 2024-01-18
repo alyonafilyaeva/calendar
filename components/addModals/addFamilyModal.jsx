@@ -9,7 +9,7 @@ import {
   TextInput,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "expo-router";
+import { router, useRouter } from "expo-router";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -19,8 +19,10 @@ import { styles } from "../../styles/StylesSheet";
 import Categories from "../categories";
 import axios from "axios";
 
-export default function AddFamilyModal({ addFamilyModal, setAddFamilyModal }) {
+export default function AddFamilyModal({ addFamilyModal, setAddFamilyModal, token }) {
   const [name, setName] = useState();
+  const [childId, setChildId] = useState();
+
   const addChild = () => {
     axios.post(
       `${baseUrl}/users/children/`,
@@ -33,10 +35,11 @@ export default function AddFamilyModal({ addFamilyModal, setAddFamilyModal }) {
           Authorization: `Bearer ${token}`,
         },
       }
-    );
-    setAddFamilyModal(false)
-    setName('')
-    document.location.reload()
+    ).catch((e) => console.log(e))
+    setAddFamilyModal(false);
+    setName("");
+    console.log('ребенок создан')
+    router.push('/profile')
   };
 
   return (
@@ -49,19 +52,16 @@ export default function AddFamilyModal({ addFamilyModal, setAddFamilyModal }) {
       >
         <View
           style={{
-            top: "40%",
-            /* height: "40%", */
+            top: "75%",
             display: "flex",
             backgroundColor: "#FFF",
-            paddingLeft: 16,
-            paddingRight: 16,
+            padding: 16,
             shadowColor: "#000",
             shadowRadius: 4,
             shadowOffset: { width: -6, height: -4 },
             shadowOpacity: 0.2,
             borderTopColor: "#EFEAEA",
             borderTopWidth: 1,
-            /* justifyContent: "flex-end", */
           }}
         >
           <View
@@ -78,7 +78,6 @@ export default function AddFamilyModal({ addFamilyModal, setAddFamilyModal }) {
             <TouchableOpacity onPress={() => addChild()}>
               <Image source={require("../../assets/images/done.png")} />
             </TouchableOpacity>
-            
           </View>
           <View>
             <FlatList
@@ -87,9 +86,14 @@ export default function AddFamilyModal({ addFamilyModal, setAddFamilyModal }) {
               showsHorizontalScrollIndicator={false}
               data={members}
               renderItem={({ item }) => (
-                <TouchableOpacity>
-                  <View style={styles.category}>
-                    <Text style={{ fontSize: 14 }}>{item.member}</Text>
+                <TouchableOpacity onPress={() => setChildId(item.id)}>
+                  <View
+                    style={[
+                      styles.category,
+                      childId == item.id && styles.click,
+                    ]}
+                  >
+                    <Text style={[{ fontSize: 14 }]}>{item.member}</Text>
                   </View>
                 </TouchableOpacity>
               )}
@@ -102,17 +106,16 @@ export default function AddFamilyModal({ addFamilyModal, setAddFamilyModal }) {
             <TextInput
               style={styles.input}
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChangeText={setName}
             />
           </View>
-          <View>
+          {/* <View>
             <Text style={{ fontSize: styles.fontSizeText, fontWeight: 700 }}>
               Аватар
             </Text>
           </View>
           <FlatList
             style={styles.familyItems}
-            /* horizontal={true} */
             numColumns={Math.ceil(colors.length / 2)}
             data={colors}
             renderItem={({ item }) => (
@@ -123,44 +126,17 @@ export default function AddFamilyModal({ addFamilyModal, setAddFamilyModal }) {
                     borderTopRightRadius: 100,
                     borderBottomLeftRadius: 100,
                     borderBottomRightRadius: 100,
-                    backgroundColor: item.color,
                     height: 56,
                     width: 56,
                     marginTop: 8,
                     marginRight: 8,
                   }}
-                ></View>
+                >
+
+                </View>
               </TouchableOpacity>
             )}
-          />
-          <View>
-            <Text style={{ fontSize: styles.fontSizeText, fontWeight: 700 }}>
-              Цвет
-            </Text>
-          </View>
-          <FlatList
-            style={styles.familyItems}
-            /* horizontal={true} */
-            numColumns={Math.ceil(colors.length / 2)}
-            data={colors}
-            renderItem={({ item }) => (
-              <TouchableOpacity>
-                <View
-                  style={{
-                    borderTopLeftRadius: 100,
-                    borderTopRightRadius: 100,
-                    borderBottomLeftRadius: 100,
-                    borderBottomRightRadius: 100,
-                    backgroundColor: item.color,
-                    height: 56,
-                    width: 56,
-                    marginTop: 8,
-                    marginRight: 8,
-                  }}
-                ></View>
-              </TouchableOpacity>
-            )}
-          />
+          /> */}
         </View>
       </Modal>
     </View>

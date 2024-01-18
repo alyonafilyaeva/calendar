@@ -30,7 +30,7 @@ export default function AddTimingModal({ addTimingModal, setAddTimingModal, days
       };
       let copy = Object.assign([], days);
       copy.push(day);
-      setDays(copy);
+      setDays((days) => [...days, day]);
     }
 
     if (thursdayCheck) {
@@ -41,65 +41,66 @@ export default function AddTimingModal({ addTimingModal, setAddTimingModal, days
       };
       let copy = Object.assign([], days);
       copy.push(day);
-      setDays(copy);
+      setDays((days) => [...days, day]);
     }
 
     if (wednesdayCheck) {
       let day = {
-        day_of_week: 2,
+        day_of_week: 3,
         time_start: values.time_start_wed,
         time_finish: values.time_finish_wed,
       };
       let copy = Object.assign([], days);
       copy.push(day);
-      setDays(copy);
+      setDays((days) => [...days, day]);
     }
 
     if (tuesdayCheck) {
       let day = {
-        day_of_week: 2,
+        day_of_week: 4,
         time_start: values.time_start_tue,
         time_finish: values.time_finish_tue,
       };
       let copy = Object.assign([], days);
       copy.push(day);
-      setDays(copy);
+      setDays((days) => [...days, day]);
     }
 
     if (fridayCheck) {
       let day = {
-        day_of_week: 2,
+        day_of_week: 5,
         time_start: values.time_start_fri,
         time_finish: values.time_finish_fri,
       };
       let copy = Object.assign([], days);
       copy.push(day);
-      setDays(copy);
+      setDays((days) => [...days, day]);
     }
 
     if (saturdayCheck) {
       let day = {
-        day_of_week: 2,
+        day_of_week: 6,
         time_start: values.time_start_sat,
         time_finish: values.time_finish_sat,
       };
       let copy = Object.assign([], days);
       copy.push(day);
-      setDays(copy);
+      setDays((days) => [...days, day]);
     }
 
     if (sundayCheck) {
       let day = {
-        day_of_week: 2,
+        day_of_week: 7,
         time_start: values.time_start_sun,
         time_finish: values.time_finish_sun,
       };
       let copy = Object.assign([], days);
       copy.push(day);
-      setDays(copy);
+      setDays((days) => [...days, day]);
     }
 
     setAddTimingModal(false)
+    console.log(days)
   };
 
   return (
@@ -182,7 +183,6 @@ export default function AddTimingModal({ addTimingModal, setAddTimingModal, days
                     <TextInput
                       style={styles.timeInput}
                       onChangeText={handleChange("time_start_mon")}
-                      onBlur={handleBlur("time_start_mon")}
                       value={values.time_start_mon}
                       placeholder="00:00"
                     />
@@ -193,7 +193,6 @@ export default function AddTimingModal({ addTimingModal, setAddTimingModal, days
                     <TextInput
                       style={styles.timeInput}
                       onChangeText={handleChange("time_finish_mon")}
-                      onBlur={handleBlur("time_finish_mon")}
                       value={values.time_finish_mon}
                       placeholder="00:00"
                     />
@@ -219,7 +218,6 @@ export default function AddTimingModal({ addTimingModal, setAddTimingModal, days
                     <TextInput
                       style={styles.timeInput}
                       onChangeText={handleChange("time_start_tue")}
-                      onBlur={handleBlur("time_start_tue")}
                       value={values.time_start_tue}
                       placeholder="00:00"
                     />
@@ -230,7 +228,6 @@ export default function AddTimingModal({ addTimingModal, setAddTimingModal, days
                     <TextInput
                       style={styles.timeInput}
                       onChangeText={handleChange("time_finish_tue")}
-                      onBlur={handleBlur("time_finish_tue")}
                       value={values.time_finish_tue}
                       placeholder="00:00"
                     />
@@ -256,7 +253,6 @@ export default function AddTimingModal({ addTimingModal, setAddTimingModal, days
                     <TextInput
                       style={styles.timeInput}
                       onChangeText={handleChange("time_start_wed")}
-                      onBlur={handleBlur("time_start_wed")}
                       value={values.time_start_wed}
                       placeholder="00:00"
                     />
@@ -267,7 +263,6 @@ export default function AddTimingModal({ addTimingModal, setAddTimingModal, days
                     <TextInput
                       style={styles.timeInput}
                       onChangeText={handleChange("time_finish_wed")}
-                      onBlur={handleBlur("time_finish_wed")}
                       value={values.time_finish_wed}
                       placeholder="00:00"
                     />
@@ -293,7 +288,6 @@ export default function AddTimingModal({ addTimingModal, setAddTimingModal, days
                     <TextInput
                       style={styles.timeInput}
                       onChangeText={handleChange("time_start_thu")}
-                      onBlur={handleBlur("time_start_thu")}
                       value={values.time_start_thu}
                       placeholder="00:00"
                     />
@@ -304,7 +298,6 @@ export default function AddTimingModal({ addTimingModal, setAddTimingModal, days
                     <TextInput
                       style={styles.timeInput}
                       onChangeText={handleChange("time_finish_thu")}
-                      onBlur={handleBlur("time_finish_thu")}
                       value={values.time_finish_thu}
                       placeholder="00:00"
                     />
@@ -319,7 +312,7 @@ export default function AddTimingModal({ addTimingModal, setAddTimingModal, days
                     uncheckedIcon="checkbox-blank-outline"
                     checkedColor="#313B97"
                   />
-                  <Text>Пятника</Text>
+                  <Text>Пятница</Text>
                   <View
                     style={{
                       display: "flex",
@@ -330,7 +323,6 @@ export default function AddTimingModal({ addTimingModal, setAddTimingModal, days
                     <TextInput
                       style={styles.timeInput}
                       onChangeText={handleChange("time_start_fri")}
-                      onBlur={handleBlur("time_start_fri")}
                       value={values.time_start_fri}
                       placeholder="00:00"
                     />
@@ -341,7 +333,6 @@ export default function AddTimingModal({ addTimingModal, setAddTimingModal, days
                     <TextInput
                       style={styles.timeInput}
                       onChangeText={handleChange("time_finish_fri")}
-                      onBlur={handleBlur("time_finish_fri")}
                       value={values.time_finish_fri}
                       placeholder="00:00"
                     />
@@ -367,7 +358,6 @@ export default function AddTimingModal({ addTimingModal, setAddTimingModal, days
                     <TextInput
                       style={styles.timeInput}
                       onChangeText={handleChange("time_start_sat")}
-                      onBlur={handleBlur("time_start_sat")}
                       value={values.time_start_sat}
                       placeholder="00:00"
                     />
@@ -378,7 +368,6 @@ export default function AddTimingModal({ addTimingModal, setAddTimingModal, days
                     <TextInput
                       style={styles.timeInput}
                       onChangeText={handleChange("time_finish_sat")}
-                      onBlur={handleBlur("time_finish_sat")}
                       value={values.time_finish_sat}
                       placeholder="00:00"
                     />
@@ -404,7 +393,6 @@ export default function AddTimingModal({ addTimingModal, setAddTimingModal, days
                     <TextInput
                       style={styles.timeInput}
                       onChangeText={handleChange("time_start_sun")}
-                      onBlur={handleBlur("time_start_sun")}
                       value={values.time_start_sun}
                       placeholder="00:00"
                     />
@@ -415,7 +403,6 @@ export default function AddTimingModal({ addTimingModal, setAddTimingModal, days
                     <TextInput
                       style={styles.timeInput}
                       onChangeText={handleChange("time_finish_sun")}
-                      onBlur={handleBlur("time_finish_sun")}
                       value={values.time_finish_sun}
                       placeholder="00:00"
                     />

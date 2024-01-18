@@ -24,7 +24,7 @@ function SwitchCalendarModal({
   let onSwitchCalendar = (state) => {
     setSwitchCalendar(state);
     setSwitchCalendarModal(false);
-    switchCalendar == "month" ?
+    switchCalendar == "week" ?
       axios
         .get(`${baseUrl}/events/?week=${new Date().toISOString().slice(0, 10)}`, {
           headers: {

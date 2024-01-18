@@ -9,7 +9,7 @@ import {
   TextInput,
 } from "react-native";
 import React, { useState } from "react";
-import { useRouter } from "expo-router";
+import { router, useRouter } from "expo-router";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -19,7 +19,8 @@ import { styles } from "../../styles/StylesSheet";
 import Categories from "../categories";
 import axios from "axios";
 
-export default function EditFamilyModal({ editFamilyModal, setEditFamilyModal, child }) {
+export default function EditFamilyModal({ editFamilyModal, setEditFamilyModal, child, token }) {
+  const router = useRouter();
   const deleteChild = () => {
     axios.delete(`${baseUrl}/users/children/${child.id}/`, {
       headers: {
@@ -27,8 +28,8 @@ export default function EditFamilyModal({ editFamilyModal, setEditFamilyModal, c
         Authorization: `Bearer ${token}`,
       },
     });
-
-    document.location.reload()
+    setEditFamilyModal(false)
+    router.push('/profile')
   };
   return (
     <View>
@@ -40,12 +41,11 @@ export default function EditFamilyModal({ editFamilyModal, setEditFamilyModal, c
       >
         <View
           style={{
-            top: "40%",
+            top: "75%",
             /* height: "40%", */
             display: "flex",
             backgroundColor: "#FFF",
-            paddingLeft: 16,
-            paddingRight: 16,
+            padding: 16,
             shadowColor: "#000",
             shadowRadius: 4,
             shadowOffset: { width: -6, height: -4 },
@@ -104,62 +104,7 @@ export default function EditFamilyModal({ editFamilyModal, setEditFamilyModal, c
                 value={props.values.title} */
             />
           </View>
-          <View>
-            <Text style={{ fontSize: styles.fontSizeText, fontWeight: 700 }}>
-              Аватар
-            </Text>
-          </View>
-          <FlatList
-            style={styles.familyItems}
-            /* horizontal={true} */
-            numColumns={Math.ceil(colors.length / 2)}
-            data={colors}
-            renderItem={({ item }) => (
-              <TouchableOpacity>
-                <View
-                  style={{
-                    borderTopLeftRadius: 100,
-                    borderTopRightRadius: 100,
-                    borderBottomLeftRadius: 100,
-                    borderBottomRightRadius: 100,
-                    backgroundColor: item.color,
-                    height: 56,
-                    width: 56,
-                    marginTop: 8,
-                    marginRight: 8,
-                  }}
-                ></View>
-              </TouchableOpacity>
-            )}
-          />
-          <View>
-            <Text style={{ fontSize: styles.fontSizeText, fontWeight: 700 }}>
-              Цвет
-            </Text>
-          </View>
-          <FlatList
-            style={styles.familyItems}
-            /* horizontal={true} */
-            numColumns={Math.ceil(colors.length / 2)}
-            data={colors}
-            renderItem={({ item }) => (
-              <TouchableOpacity>
-                <View
-                  style={{
-                    borderTopLeftRadius: 100,
-                    borderTopRightRadius: 100,
-                    borderBottomLeftRadius: 100,
-                    borderBottomRightRadius: 100,
-                    backgroundColor: item.color,
-                    height: 56,
-                    width: 56,
-                    marginTop: 8,
-                    marginRight: 8,
-                  }}
-                ></View>
-              </TouchableOpacity>
-            )}
-          />
+          
         </View>
       </Modal>
     </View>

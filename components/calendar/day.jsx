@@ -4,24 +4,7 @@ import Event from "./event";
 import axios from "axios";
 import { toDate } from "../../constants/constants";
 
-export default function Day({ date, events }) {
-  /* const [events, setEvents] = useState([]); */
-  /* const fetchEvents = () => {
-    axios
-      .get("http://localhost:8000/api/events/", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAzMjY0OTk5LCJpYXQiOjE3MDMyNjEzOTksImp0aSI6ImE2NTY2Nzg3ZjI2OTRhMTI4NmFhMTI2YTljOWYxYTk1IiwidXNlcl9pZCI6MX0.qUJfpbvqYPx_yuu02-skA0GoCYmEhftYeYSR_TraF6A",
-        },
-      })
-      .then((response) => {
-        setEvents(response.data);
-        console.log(response.data);
-      });
-  };
-
-  useEffect(fetchEvents, []); */
+export default function Day({ date, events, token }) {
 
   const newCalendar = events.filter(function (item) {
     return item.event_date == date;
@@ -36,6 +19,7 @@ export default function Day({ date, events }) {
           <Event
             id={item.id}
             child={item.child.name}
+            token={token}
           />
         </View>
       );

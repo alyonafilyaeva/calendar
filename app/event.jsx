@@ -19,17 +19,28 @@ import {
   timing,
   toDate,
   events,
-  toDay
+  toDay,
 } from "../constants/constants";
 import { marginRightElements, styles } from "../styles/StylesSheet";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { token, baseUrl } from "../constants/constants";
 import axios from "axios";
+import * as SecureStore from "expo-secure-store";
 
 export default function Event() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
-  const [event, setEvent] = useState(events[0]);
+  const [event, setEvent] = useState();
+  let [token, setToken] = useState();
+  useEffect(() => {
+    (async () => {
+      let res = await SecureStore.getItemAsync("token");
+      setToken(res);
+    })();
+  }, []);
+  useEffect(() => {
+    fetchEvents();
+  }, [token]);
   const fetchEvents = () => {
     axios
       .get(`${baseUrl}/events/${id}`, {
@@ -40,9 +51,10 @@ export default function Event() {
       })
       .then((response) => {
         setEvent(response.data);
+        console.log("событие получено");
       });
   };
-  useEffect(fetchEvents, []);
+  /* useEffect(() => fetchEvents, []); */
 
   const deleteEvent = () => {
     axios.delete(`${baseUrl}/events/${id}/`, {
@@ -55,19 +67,20 @@ export default function Event() {
     router.push("/");
   };
 
-  let newDate = toDate(event.event_date);
+  let newDate = toDate(event?.event_date);
 
   return (
     <View style={styles.container}>
       <View style={styles.topPanel}>
-        <TouchableOpacity onPress={() => router.push("/")}>
+        <TouchableOpacity onPress={() => router.push("/main")}>
           <Image
             /* style={{ height: 30, width: 30 }} */
             source={require("../assets/images/back.png")}
           />
         </TouchableOpacity>
         <Text>
-          <Text style={{fontSize: 22}}>•</Text> <Text style={{fontSize: 22}}>{event.main_name}</Text>
+          <Text style={{ fontSize: 22 }}>•</Text>{" "}
+          <Text style={{ fontSize: 22 }}>{event?.main_name}</Text>
         </Text>
         <View style={{ display: "flex", flexDirection: "row" }}>
           <TouchableOpacity onPress={() => deleteEvent()}>
@@ -76,7 +89,7 @@ export default function Event() {
               source={require("../assets/images/delete.png")}
             />
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push({pathname: "/editEvent", params: {id: event.id}})}>
             <Image
               /* style={{ height: 30, width: 30 }} */
               source={require("../assets/images/edit.png")}
@@ -85,17 +98,23 @@ export default function Event() {
         </View>
       </View>
       <View style={{ display: "flex", flexDirection: "row", marginTop: 32 }}>
-        <Text style={{ fontSize: 18, fontWeight: 700 }}>{newDate}</Text>
-        <Text style={{ fontSize: 18, fontWeight: 700 }}>15:00</Text>
+        <Text style={{ fontSize: 18, fontWeight: 700, marginRight: 8 }}>
+          {newDate}
+        </Text>
+        <Text style={{ fontSize: 18, fontWeight: 700 }}>
+          {event?.event_time_start.slice(0, 5)}
+        </Text>
         <Text style={{ fontSize: 18, fontWeight: 700 }}>–</Text>
-        <Text style={{ fontSize: 18, fontWeight: 700 }}>16:00</Text>
+        <Text style={{ fontSize: 18, fontWeight: 700 }}>
+          {event?.event_time_finish.slice(0, 5)}
+        </Text>
       </View>
 
       <View>
         <View style={styles.family}>
           <Text
             style={{
-              fontSize: styles.fontSizeText,
+              fontSize: 16,
               fontWeight: 700,
               marginBottom: 8,
             }}
@@ -110,18 +129,16 @@ export default function Event() {
             }}
           >
             <TouchableOpacity>
-            <View style={styles.avatar}>
-                    {
-                      (event.child.name == "Петя" ? (
-                        <Image source={require("../assets/images/Boy.png")} />
-                      ) : (
-                        <Image source={require("../assets/images/Girl.png")} />
-                      ))
-                    }
-                    <Text style={{ fontSize: styles.fontSizeText, marginLeft: 10 }}>
-                    {event.child.name}
-                  </Text>
-                  </View>
+              <View style={styles.avatar}>
+                {event?.child.name == "Петя" ? (
+                  <Image source={require("../assets/images/Boy.png")} />
+                ) : (
+                  <Image source={require("../assets/images/Girl.png")} />
+                )}
+                <Text style={{ fontSize: 16, marginLeft: 10 }}>
+                  {event?.child.name}
+                </Text>
+              </View>
             </TouchableOpacity>
           </View>
         </View>
@@ -130,7 +147,7 @@ export default function Event() {
       <View style={{ marginTop: 32 }}>
         <Text
           style={{
-            fontSize: styles.fontSizeText,
+            fontSize: 16,
             fontWeight: 700,
           }}
         >
@@ -138,10 +155,10 @@ export default function Event() {
         </Text>
         <View style={styles.categoriesItems}>
           <View style={styles.category}>
-            <Text style={{ fontSize: styles.fontSizeText }}>12:20</Text>
+            <Text style={{ fontSize: 16 }}>12:20</Text>
           </View>
           <View style={styles.category}>
-            <Text style={{ fontSize: styles.fontSizeText }}>13:30</Text>
+            <Text style={{ fontSize: 16 }}>13:30</Text>
           </View>
         </View>
       </View>
@@ -149,7 +166,7 @@ export default function Event() {
       <View style={{ marginTop: 32 }}>
         <Text
           style={{
-            fontSize: styles.fontSizeText,
+            fontSize: 16,
             fontWeight: 700,
           }}
         >
@@ -163,7 +180,7 @@ export default function Event() {
             alignItems: "center",
           }}
         >
-          <Text style={{fontSize: styles.fontSizeText}}>{event.location.address}</Text>
+          <Text style={{ fontSize: 16 }}>{event?.location.address}</Text>
           <View style={{ display: "flex", flexDirection: "row" }}>
             <TouchableOpacity>
               <Image
@@ -181,19 +198,20 @@ export default function Event() {
         </View>
       </View>
 
-      {event.schedule && <View>
-        <FlatList
-          style={styles.familyItems}
-          data={event?.schedule.days}
-          renderItem={({ item }) => (
-            <View
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text style={{ fontSize: 18 }}>{toDay(item.day_of_week)}</Text>
+      {event?.schedule && (
+        <View style={{ marginTop: 16 }}>
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: 700,
+            }}
+          >
+            Расписание
+          </Text>
+          <FlatList
+            style={styles.familyItems}
+            data={event?.schedule.days}
+            renderItem={({ item }) => (
               <View
                 style={{
                   display: "flex",
@@ -201,16 +219,31 @@ export default function Event() {
                   justifyContent: "space-between",
                 }}
               >
-                <Text style={{ fontSize: 18 }}>{item.time_start}</Text>
-                <Text style={{ fontSize: 18 }}>–</Text>
-                <Text style={{ fontSize: 18 }}>{item.time_finish}</Text>
+                <Text style={{ fontSize: 16, marginRight: 120 }}>
+                  {toDay(item.day_of_week)}
+                </Text>
+                <View
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Text style={{ fontSize: 16, marginRight: 26 }}>
+                    {item.time_start.slice(0, 5)}
+                  </Text>
+                  <Text style={{ fontSize: 16, marginRight: 26 }}>–</Text>
+                  <Text style={{ fontSize: 16 }}>
+                    {item.time_finish.slice(0, 5)}
+                  </Text>
+                </View>
               </View>
-            </View>
-          )}
-        />
-      </View>}
+            )}
+          />
+        </View>
+      )}
 
-      {event.event_description && (
+      {event?.event_description && (
         <View>
           <Text
             style={{
@@ -220,7 +253,7 @@ export default function Event() {
           >
             Комментарий
           </Text>
-          <Text>{event.event_description}</Text>
+          <Text>{event?.event_description}</Text>
         </View>
       )}
     </View>

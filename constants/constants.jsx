@@ -1,7 +1,11 @@
-export let baseUrl = "http://127.0.0.1:8000/api";
-export let token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzA1MTQ5NTYxLCJpYXQiOjE3MDUxNDU5NjEsImp0aSI6Ijg0YTk2MGZmMzRhYjQxMzRiZDE2MzFkNzRlNDQ2NWFiIiwidXNlcl9pZCI6MX0.m3Jkq5U1NXtpYkB_9rFRHud0esOjheLWvrNlfZ9vOHg";
+import { useState } from "react";
 
+export let baseUrl = "http://185.84.163.185/api";
+/* export let token =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzA1MTQ5NTYxLCJpYXQiOjE3MDUxNDU5NjEsImp0aSI6Ijg0YTk2MGZmMzRhYjQxMzRiZDE2MzFkNzRlNDQ2NWFiIiwidXNlcl9pZCI6MX0.m3Jkq5U1NXtpYkB_9rFRHud0esOjheLWvrNlfZ9vOHg";
+ */
+
+  export let [token, setToken] = useState()
 let months = {
   1: "января",
   2: "февраля",
@@ -17,7 +21,7 @@ let months = {
   12: "декабря",
 };
 
-export function toDate(date) {
+export function toDate(date = '2024-01-01') {
   let [year, month, day] = date.split("-");
   let today = new Date().toISOString().slice(0, 10);
   let newDate;
@@ -92,8 +96,8 @@ export let timing = [
 ];
 
 export let colors = [
-  { id: 1, color: "#313B97" },
-  { id: 2, color: "#20F936" },
+  { id: 1, img: `../../assets/images/Boy.png` },
+  /* { id: 2, color: "#20F936" },
   { id: 3, color: "#976A31" },
   { id: 4, color: "#D90606" },
   { id: 5, color: "#FFE641" },
@@ -101,7 +105,7 @@ export let colors = [
   { id: 7, color: "#00C0FD" },
   { id: 8, color: "#A12FAA" },
   { id: 9, color: "#319766" },
-  { id: 10, color: "#222" },
+  { id: 10, color: "#222" }, */
 ];
 
 export let members = [

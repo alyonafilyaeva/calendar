@@ -17,6 +17,7 @@ import axios from "axios";
 export default function AddAddressModal({
   addAddressModal,
   setAddAddressModal,
+  token
 }) {
   let [address, setAddress] = useState();
   let [latitude, setLatitude] = useState(0)
@@ -38,7 +39,6 @@ export default function AddAddressModal({
     );
     setAddAddressModal(false);
     setAddress("");
-    document.location.reload();
   };
   return (
     <View>
@@ -88,7 +88,7 @@ export default function AddAddressModal({
             <TextInput
               style={styles.input}
               value={address}
-              onChange={(e) => setAddress(e.target.value)}
+              onChangeText={setAddress}
             />
           </View>
         </View>

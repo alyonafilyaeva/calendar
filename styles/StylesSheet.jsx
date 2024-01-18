@@ -11,7 +11,7 @@ export let backgroundColor = "#FFF6EC";
 export let backgroundColorItems = "#EFEAEA";
 export let colorCheck = "#313B97";
 export let fontSizeTitle = 22;
-export let fontSizeText = 14;
+export let fontSizeText = 18;
 export let marginRightElements = 8;
 export let marginTopBlocks = 32;
 export let marginTopInsideBlocks = 16;
@@ -132,15 +132,18 @@ export const styles = StyleSheet.create({
   },
   input: {
     borderRadius: borderRadius,
+    borderTopRightRadius: borderRadius,
+    borderTopLeftRadius: borderRadius,
     backgroundColor: backgroundColorItems,
-    height: heightCategories,
-    width: wp(92),
-    alignItems: "center",
+    height: 46,
+    width: '100%',
+    /* alignItems: "center", */
     marginRight: 15,
     marginBottom: 10,
     marginTop: marginTopInsideBlocks,
     paddingLeft: 10,
     paddingRight: 10,
+    overflow: 'hidden'
   },
 
   family: {
@@ -273,9 +276,10 @@ export const styles = StyleSheet.create({
     marginBottom: marginTopInsideBlocks,
   },
   switch: {
-    borderRadius: borderRadius,
-    backgroundColor: backgroundColorMain,
-    borderColor: "red",
+    borderRadius: 15,
+    backgroundColor: backgroundColor,
+    borderColor: backgroundColorMain,
+    borderWidth: 1,
     padding: marginRightElements,
     paddingRight: 20,
   },
@@ -312,5 +316,19 @@ export const styles = StyleSheet.create({
     borderWidth:1,
     padding: 12,
     marginBottom: 5
+  }, 
+  passiveAuth: {
+    fontSize: fontSizeTitle,
+    color: backgroundColorMain,
+    fontWeight: 700,
+    padding: 5
+  },
+  activeAuth: {
+    fontSize: fontSizeTitle,
+    color: '#313B97',
+    fontWeight: 700,
+    padding: 5,
+    borderBottomWidth: 3,
+    borderColor: '#313B97'
   }
 });

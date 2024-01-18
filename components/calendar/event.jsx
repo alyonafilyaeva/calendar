@@ -5,12 +5,12 @@ import { useRouter } from "expo-router";
 import axios from "axios";
 import { baseUrl, token } from "../../constants/constants";
 
-export default function Event({ id, child }) {
+export default function Event({ id, child, token }) {
   const router = useRouter();
   const [event, setEvent] = useState([]);
 
-  const fetchEvents = () => {
-    axios
+  const fetchEvents = async () => {
+    await axios
       .get(`${baseUrl}/events/${id}`, {
         headers: {
           "Content-Type": "application/json",
@@ -23,11 +23,10 @@ export default function Event({ id, child }) {
   };
 
   useEffect(fetchEvents, []);
-  console.log(event);
   return (
     <TouchableOpacity
       onPress={() =>
-        router.push({ pathname: `/event`, params: { id: event.id } })
+        router.push({ pathname: `/event`, params: { id: event.id, /* token: token */ } })
       }
     >
       <View style={styles.event}>
@@ -39,12 +38,12 @@ export default function Event({ id, child }) {
           }}
         >
           <View>
-            <Text style={{ marginBottom: 8 }}>{event.event_time_start}</Text>
-            <Text>{event.event_time_finish}</Text>
+            <Text style={{ marginBottom: 8 }}>{event?.event_time_start}</Text>
+            <Text>{event?.event_time_finish}</Text>
           </View>
           <View style={styles.stick}></View>
           <View>
-            <Text style={{ fontWeight: 700 }}>{event.main_name}</Text>
+            <Text style={{ fontWeight: 700 }}>{event?.main_name}</Text>
             <View
               style={{
                 display: "flex",
@@ -61,7 +60,7 @@ export default function Event({ id, child }) {
           </View>
         </View>
         <View style={{justifyContent: 'center', alignItems: 'center'}}>
-          {child == "Петя" ? (
+          {child == "Вася" ? (
             <Image source={require("../../assets/images/Boy.png")} />
           ) : (
             <Image source={require("../../assets/images/Girl.png")} />

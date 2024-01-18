@@ -7,6 +7,7 @@ import {
   FlatList,
   Modal,
   TextInput,
+  ScrollView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -32,10 +33,11 @@ import EditCategoryModal from "../components/editModals/editCategoryModal";
 import EditAddressModal from "../components/editModals/editAddressModal";
 import EditFamilyModal from "../components/editModals/editFamilyModal";
 import axios from "axios";
+import * as SecureStore from "expo-secure-store";
 
 export default function Profile() {
   const router = useRouter();
-  const { id } = useLocalSearchParams();
+
   let [addCategoryModal, setAddCategoryModal] = useState(false);
   let [addAddressModal, setAddAddressModal] = useState(false);
   let [addFamilyModal, setAddFamilyModal] = useState(false);
@@ -43,8 +45,14 @@ export default function Profile() {
   let [editAddressModal, setEditAddressModal] = useState(false);
   let [editFamilyModal, setEditFamilyModal] = useState(false);
   let [profile, setProfile] = useState(initialProfile);
-  const fetchProfile = () => {
-    axios
+  let [token, setToken] = useState("");
+
+  const getToken = async() => {
+    let res = await SecureStore.getItemAsync("token");
+    setToken(res);
+  }
+  const fetchData = async () => {
+   await axios
       .get(`${baseUrl}/users/profile`, {
         headers: {
           "Content-Type": "application/json",
@@ -53,14 +61,38 @@ export default function Profile() {
       })
       .then((response) => {
         setProfile(response.data);
-        console.log(response.data);
       });
+      console.log('data')
   };
-  useEffect(fetchProfile, []);
+  useEffect(() => {
+    console.log('token')
+    getToken();
+    fetchData()
+  }, [token, profile]);
+
+  /* useEffect(() => {
+    console.log('profile')
+    fetchData();
+  }, [profile]); */
+
+  let logoutUser = async () => {
+    await SecureStore.setItemAsync("token", '');
+    console.log("вышли");
+    router.push("/");
+  };
+
+  let deleteLocation = (locationId) => {
+    axios.delete(`${baseUrl}/locations/${locationId}/`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  };
   return (
     <View style={styles.container}>
       <View style={styles.topPanel}>
-        <TouchableOpacity onPress={() => router.push("/")}>
+        <TouchableOpacity onPress={() => router.push("/main")}>
           <Image
             /* style={{ height: 30, width: 30 }} */
             source={require("../assets/images/back.png")}
@@ -75,7 +107,7 @@ export default function Profile() {
         >
           Профиль
         </Text>
-        <TouchableOpacity onPress={() => router.push("/")}>
+        <TouchableOpacity onPress={() => logoutUser()}>
           <Image
             /* style={{ height: 30, width: 30 }} */
             source={require("../assets/images/logout.png")}
@@ -100,10 +132,7 @@ export default function Profile() {
           <Text>{profile.email}</Text>
         </View>
         <TouchableOpacity onPress={() => router.push("/")}>
-          <Image
-            /* style={{ height: 30, width: 30 }} */
-            source={require("../assets/images/edit.png")}
-          />
+          <Image source={require("../assets/images/edit.png")} />
         </TouchableOpacity>
       </View>
 
@@ -116,11 +145,12 @@ export default function Profile() {
         >
           Члены семьи
         </Text>
-        <View
+        <ScrollView
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
           style={{
             display: "flex",
             flexDirection: "row",
-            justifyContent: "flex-start",
             marginTop: 10,
           }}
         >
@@ -132,41 +162,41 @@ export default function Profile() {
               <TouchableOpacity onPress={() => setEditFamilyModal(true)}>
                 <View style={styles.familyItem}>
                   <View style={styles.avatar}>
-                    {
-                      (item.name == "Петя" ? (
-                        <Image source={require("../assets/images/Boy.png")} />
-                      ) : (
-                        <Image source={require("../assets/images/Girl.png")} />
-                      ))
-                    }
-                    <Text style={{ fontSize: styles.fontSizeText }}>
-                    {item.name}
-                  </Text>
+                    {item.name == "Вася" ? (
+                      <Image source={require("../assets/images/Boy.png")} />
+                    ) : (
+                      <Image source={require("../assets/images/Girl.png")} />
+                    )}
+                    <Text
+                      style={{ fontSize: styles.fontSizeText, marginLeft: 5 }}
+                    >
+                      {item.name}
+                    </Text>
                   </View>
-                  
                 </View>
                 <EditFamilyModal
                   editFamilyModal={editFamilyModal}
                   setEditFamilyModal={setEditFamilyModal}
                   child={item}
+                  token={token}
                 />
               </TouchableOpacity>
             )}
           />
           <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => setAddFamilyModal(true)}
-        >
-          <Image source={require("../assets/images/plus.png")} />
-          <Text
-            style={{
-              fontSize: styles.fontSizeText,
-            }}
+            style={styles.addButton}
+            onPress={() => setAddFamilyModal(true)}
           >
-            Добавить
-          </Text>
-        </TouchableOpacity>
-        </View>
+            <Image source={require("../assets/images/plus.png")} />
+            <Text
+              style={{
+                fontSize: styles.fontSizeText,
+              }}
+            >
+              Добавить
+            </Text>
+          </TouchableOpacity>
+        </ScrollView>
       </View>
 
       <View style={styles.addresses}>
@@ -195,7 +225,7 @@ export default function Profile() {
                   </Text>
                 </View>
                 <View style={{ display: "flex", flexDirection: "row" }}>
-                  <TouchableOpacity>
+                  <TouchableOpacity onPress={(item) => deleteLocation(item.id)}>
                     <Image
                       style={{ marginRight: 10 }}
                       source={require("../assets/images/delete.png")}
@@ -231,7 +261,7 @@ export default function Profile() {
             fontWeight: 700,
           }}
         >
-          Категории
+          Расписания
         </Text>
 
         <View
@@ -240,6 +270,7 @@ export default function Profile() {
             flexDirection: "row",
             justifyContent: "space-between",
             alignItems: "center",
+            marginBottom: 16,
           }}
         >
           <Categories />
@@ -263,14 +294,17 @@ export default function Profile() {
       <AddAddressModal
         addAddressModal={addAddressModal}
         setAddAddressModal={setAddAddressModal}
+        token={token}
       />
       <AddFamilyModal
         addFamilyModal={addFamilyModal}
         setAddFamilyModal={setAddFamilyModal}
+        token={token}
       />
       <EditCategoryModal
         editCategoryModal={editCategoryModal}
         setEditCategoryModal={setEditCategoryModal}
+        token={token}
       />
       <EditAddressModal
         editAddressModal={editAddressModal}
