@@ -1,11 +1,7 @@
-import { useState } from "react";
+
 
 export let baseUrl = "http://185.84.163.185/api";
-/* export let token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzA1MTQ5NTYxLCJpYXQiOjE3MDUxNDU5NjEsImp0aSI6Ijg0YTk2MGZmMzRhYjQxMzRiZDE2MzFkNzRlNDQ2NWFiIiwidXNlcl9pZCI6MX0.m3Jkq5U1NXtpYkB_9rFRHud0esOjheLWvrNlfZ9vOHg";
- */
 
-  export let [token, setToken] = useState()
 let months = {
   1: "января",
   2: "февраля",
@@ -21,7 +17,7 @@ let months = {
   12: "декабря",
 };
 
-export function toDate(date = '2024-01-01') {
+export function toDate(date = "2024-01-01") {
   let [year, month, day] = date.split("-");
   let today = new Date().toISOString().slice(0, 10);
   let newDate;
@@ -44,6 +40,27 @@ let days = {
 export function toDay(day) {
   return days[day];
 }
+
+export function getMonth(month) {
+  let months = {
+    1: "Январь",
+    2: "Февраль",
+    3: "Март",
+    4: "Апрель",
+    5: "Май",
+    6: "Июнь",
+    7: "Июль",
+    8: "Август",
+    9: "Сентябрь",
+    10: "Октябрь",
+    11: "Ноябрь",
+    12: "Декабрь",
+  };
+
+  return months[month]
+}
+export const Swimming = { key: "Swimming", color: "#A12FAA", selectedDotColor: "blue" };
+export const Drowing = { key: "Drowing", color: "#FD9800", selectedDotColor: "blue" };
 
 export let family = [
   {

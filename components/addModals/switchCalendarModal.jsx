@@ -20,23 +20,13 @@ function SwitchCalendarModal({
   setSwitchCalendar,
   events,
   setEvents,
+  token
 }) {
   let onSwitchCalendar = (state) => {
     setSwitchCalendar(state);
     setSwitchCalendarModal(false);
-    switchCalendar == "week" ?
-      axios
-        .get(`${baseUrl}/events/?week=${new Date().toISOString().slice(0, 10)}`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((response) => {
-          setEvents(response.data);
-        })
-        : axios
-        .get(`${baseUrl}/events/`, {
+    switchCalendar == "month" && axios
+        .get(`${baseUrl}/events/?date=${new Date().toISOString().slice(0, 10)}`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,

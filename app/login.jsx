@@ -111,6 +111,7 @@ export default function Login() {
                 onChangeText={handleChange("password")}
                 value={values.password}
                 placeholder="Пароль"
+                secureTextEntry={true}
               />
             </View>
             <TouchableOpacity style={styles.buttonGrey} onPress={handleSubmit}>

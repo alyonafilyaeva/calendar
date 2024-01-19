@@ -19,18 +19,16 @@ import { useRouter } from "expo-router";
 import { styles } from "../styles/StylesSheet";
 import {
   Calendar,
-  WeekCalendar,
   CalendarProvider,
+  LocaleConfig,
 } from "react-native-calendars";
-import { baseUrl } from "../constants/constants";
+import { baseUrl, getMonth, Swimming, Drowing } from "../constants/constants";
 import Day from "../components/calendar/day";
 import axios from "axios";
 import SwitchCalendarModal from "../components/addModals/switchCalendarModal";
 import * as SecureStore from "expo-secure-store";
-import AuthContext from "../constants/context";
-
-const Vasya = { key: "Vasya", color: "#A12FAA", selectedDotColor: "blue" };
-const Ann = { key: "Ann", color: "#FD9800", selectedDotColor: "blue" };
+import WeekViewCalendar from "../components/calendar/weekCalendar";
+import MonthViewCalendar from "../components/calendar/monthCalendar";
 
 export default function Main() {
   const router = useRouter();
@@ -38,16 +36,61 @@ export default function Main() {
   const [clickSchedule, setClickSchedule] = useState("");
   const [categories, setCategories] = useState([]);
   const [events, setEvents] = useState([]);
+  const [allEvents, setAllEvents] = useState([]);
   const [switchCalendarModal, setSwitchCalendarModal] = useState(false);
   const [switchCalendar, setSwitchCalendar] = useState("month");
   const [filterSchedule, setFilterSchedule] = useState([]);
   const [token, setToken] = useState("");
+  const [month, setMonth] = useState("");
+  const [year, setYear] = useState("");
   let markedDates = {};
-  events.forEach((item) => {
+  allEvents.forEach((item) => {
     markedDates[item.event_date] = {
-      dots: [item.child.name == "Вася" ? Vasya : Ann],
+      dots: [item.main_name == "Плавание" ? Swimming : Drowing],
     };
   });
+
+  LocaleConfig.locales["fr"] = {
+    monthNames: [
+      "Январь",
+      "Февраль",
+      "Март",
+      "Апрель",
+      "Май",
+      "Июнь",
+      "Июль",
+      "Август",
+      "Сентрябрь",
+      "Октябрь",
+      "Ноябрь",
+      "Декабрь",
+    ],
+    monthNamesShort: [
+      "Janv.",
+      "Févr.",
+      "Mars",
+      "Avril",
+      "Mai",
+      "Juin",
+      "Juil.",
+      "Août",
+      "Sept.",
+      "Oct.",
+      "Nov.",
+      "Déc.",
+    ],
+    dayNames: [
+      "Понедельник",
+      "Вторник",
+      "Среда",
+      "Четверг",
+      "Пятница",
+      "Суббота",
+      "Воскресенье",
+    ],
+    dayNamesShort: ["ВС", "ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ"],
+  };
+  LocaleConfig.defaultLocale = "fr";
 
   useEffect(() => {
     (async () => {
@@ -58,21 +101,21 @@ export default function Main() {
 
   useEffect(() => {
     console.log("token is", token);
-    
+
     console.log("schedule is", filterSchedule);
     fetchData(token);
-    
-   /*  if (switchCalendar == "week") {
+
+    /*  if (switchCalendar == "week") {
       fetchFilterEvents("", "", new Date().toISOString().slice(0, 10));
       console.log("week");
     } */
   }, [token]);
 
   useEffect(() => {
-    console.log('1 schedule')
-    getSchedule()
-    console.log('2 schedule')
-  }, [events])
+    console.log("1 schedule");
+    getSchedule();
+    console.log("2 schedule");
+  }, [events]);
 
   const getSchedule = () => {
     let schedule = events
@@ -81,13 +124,28 @@ export default function Main() {
       })
       .map((item) => ({ id: item.schedule.id, name: item.main_name }));
 
-     setFilterSchedule(
+    setFilterSchedule(
       Array.from(new Set(schedule.map(JSON.stringify))).map(JSON.parse)
     );
     console.log("schedule");
   };
 
   const fetchData = (token) => {
+    token &&
+      axios
+        .get(
+          `${baseUrl}/events/?date=${new Date().toISOString().slice(0, 10)}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          setEvents(response.data);
+        });
+
     token &&
       axios
         .get(`${baseUrl}/events/`, {
@@ -97,9 +155,7 @@ export default function Main() {
           },
         })
         .then((response) => {
-          setEvents(response.data);
-         
-          console.log("события получены");
+          setAllEvents(response.data);
         });
 
     token &&
@@ -117,6 +173,9 @@ export default function Main() {
             { id: "", name: "Все" },
           ]);
         });
+
+    setMonth(getMonth(new Date().getMonth() + 1));
+    setYear(new Date().getFullYear());
   };
 
   const fetchFilterEvents = (
@@ -125,7 +184,10 @@ export default function Main() {
     week = "",
     scheduleId = ""
   ) => {
-    console.log('filter', `${baseUrl}/events/?child=${childId}&date=${date}&week=${week}&schedule=${scheduleId}`)
+    console.log(
+      "filter",
+      `${baseUrl}/events/?child=${childId}&date=${date}&week=${week}&schedule=${scheduleId}`
+    );
     axios
       .get(
         `${baseUrl}/events/?child=${childId}&date=${date}&week=${week}&schedule=${scheduleId}`,
@@ -154,6 +216,11 @@ export default function Main() {
       return result.includes(item) ? result : [...result, item];
     }, []);
 
+  const onChangeMonth = (month, year) => {
+    setMonth(getMonth(month));
+    setYear(year);
+  };
+
   return (
     <View>
       <ScrollView style={styles.container}>
@@ -167,7 +234,10 @@ export default function Main() {
               justifyContent: "flex-end",
             }}
           >
-            <Text style={{ fontSize: hp(4), fontWeight: 700 }}>Календарь</Text>
+            <Text style={{ fontSize: hp(4), fontWeight: 700, marginRight: 5 }}>
+              {month}
+            </Text>
+            <Text style={{ fontSize: hp(4), fontWeight: 700 }}>{year}</Text>
             <View style={{ marginLeft: 10 }}>
               <TouchableOpacity
                 style={styles.switch}
@@ -235,27 +305,19 @@ export default function Main() {
         </ScrollView>
 
         {switchCalendar == "month" ? (
-          <Calendar
-            style={{ borderRadius: 20, marginTop: 32, marginBottom: 32 }}
-            markingType={"multi-dot"}
-            firstDay={1}
+          <MonthViewCalendar
             markedDates={markedDates}
-            onDayPress={(day) => {
-              fetchFilterEvents("", day.dateString);
-            }}
+            setEvents={setEvents}
+            token={token}
+            fetchFilterEvents={fetchFilterEvents}
+            onChangeMonth={onChangeMonth}
           />
         ) : (
-          <CalendarProvider
-            style={{ marginTop: 20 }}
-            date={new Date().toISOString().slice(0, 10)}
-          >
-            <WeekCalendar
-              firstDay={1}
-              hideDayNames={false}
-              markingType={"multi-dot"}
-              markedDates={markedDates}
-            />
-          </CalendarProvider>
+          <WeekViewCalendar
+            markedDates={markedDates}
+            setEvents={setEvents}
+            token={token}
+          />
         )}
 
         <View>
@@ -287,6 +349,7 @@ export default function Main() {
         setSwitchCalendar={setSwitchCalendar}
         events={events}
         setEvents={setEvents}
+        token={token}
       />
     </View>
   );

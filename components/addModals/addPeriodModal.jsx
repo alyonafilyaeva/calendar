@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Calendar } from "react-native-calendars";
+import React, { useEffect, useMemo, useState } from "react";
+import { Calendar, LocaleConfig } from "react-native-calendars";
 import {
   View,
   Text,
@@ -23,6 +23,23 @@ function AddPeriodModal({
   let [start, setStart] = useState();
   let [dates, setDates] = useState({ startDay: "", endDay: "" });
   let [click, setClick] = useState(1);
+  const [selected, setSelected] = useState('');
+  const marked = useMemo(() => ({
+    [selected]: {
+      /* selected: true, */
+      marked: true,
+      selectedColor: 'red',
+      selectedTextColor: "red",
+      dotColor: '#ADB9E3'
+    }
+  }), [selected]);
+  LocaleConfig.locales['fr'] = {
+    monthNames: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентрябрь','Октябрь','Ноябрь','Декабрь'],
+    monthNamesShort: ['Janv.','Févr.','Mars','Avril','Mai','Juin','Juil.','Août','Sept.','Oct.','Nov.','Déc.'],
+    dayNames: ['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'],
+    dayNamesShort: ['ВС','ПН','ВТ','СР','ЧТ','ПТ','СБ',],
+  };
+  LocaleConfig.defaultLocale = 'fr';
   let addPeriod = (day) => {
     setClick((click) => click + 1);
     console.log(click)
@@ -40,7 +57,7 @@ function AddPeriodModal({
         break;
     }
 
-    let days = (end - start) / 3600 / 1000 / 24;
+   /*  let days = (end - start) / 3600 / 1000 / 24;
     console.log(days);
     let marked = {};
     for (let i = 1; i <= days; i++) {
@@ -53,7 +70,7 @@ function AddPeriodModal({
         disabled: true,
       };
     }
-    return marked;
+    return marked; */
   };
   return (
     <View>
@@ -65,13 +82,12 @@ function AddPeriodModal({
       >
         <View
           style={{
-            top: "55%",
+            top: "53%",
             /* height: "40%", */
             display: "flex",
             backgroundColor: "#FFF",
-            paddingLeft: 16,
-            paddingRight: 16,
-            paddingBottom: 30,
+            padding: 16,
+            paddingBottom: 40,
             shadowColor: "#000",
             shadowRadius: 4,
             shadowOffset: { width: -6, height: -4 },
@@ -99,14 +115,15 @@ function AddPeriodModal({
           <Calendar
             firstDay={1}
             markingType={"period"}
-            markedDates={{
+            /* markedDates={{
               startingDay: { startingDay: true, color: "#EFEAEA" },
               endingDay: {
                 endingDay: true,
                 color: "#EFEAEA",
               },
-            }}
-            onDayPress={(day) => addPeriod(day)}
+            }} */
+            markedDates={marked}
+            onDayPress={(day) => {addPeriod(day); setSelected(day.dateString)}}
           />
         </View>
       </Modal>

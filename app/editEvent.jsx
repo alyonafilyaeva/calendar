@@ -64,9 +64,15 @@ export default function EditEvent() {
     setIsEnabledAfter((previousState) => !previousState);
   console.log("days are", days);
   console.log("event is", event);
+
   let formatDate = (date) => {
     let [day, month, year] = date?.split(".");
     return `${year}-${month}-${day}`;
+  };
+
+  let onformatDate = (date) => {
+    let [year, month, day] = date?.split("-");
+    return `${day}.${month}.${year}`;
   };
 
   useEffect(() => {
@@ -94,7 +100,7 @@ export default function EditEvent() {
         setChildId(response.data.child.id);
         setLocationId(response.data.location.id);
         setMainName(response.data.main_name);
-        setEventDate(response.data.event_date);
+        setEventDate(onformatDate(response.data.event_date));
         setEventTimeStart(response.data.event_time_start);
         setEventTimeFinish(response.data.event_time_finish);
         setEventDescription(response.data.event_description);
@@ -135,16 +141,16 @@ export default function EditEvent() {
         Authorization: `Bearer ${token}`
       },
       data: {
-        'main_name': 'lll',
-        'child': 2,
-        'location': 2,
-        'event_date': '2024-01-21',
-        'event_time_start': '10:00',
-        'event_time_finish': '12:00',
-        'event_description': 'lll'
+        'main_name': mainName,
+        'child': childId,
+        'location': locationId,
+        'event_date': formatDate(eventDate),
+        'event_time_start': eventTimeStart,
+        'event_time_finish': eventTimeFinish,
+        'event_description': eventDescription
       }
   }).then(response => {
-    if (response.status === 201) {
+    if (response.status === 200) {
       router.push("/main");
     }
   })

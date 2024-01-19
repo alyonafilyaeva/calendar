@@ -47,6 +47,8 @@ export default function AddEvent() {
   const [selectedValue, setSelectedValue] = useState("one");
   const [children, setChildren] = useState([]);
   const [childId, setChildId] = useState(0);
+  const [falimyBeforeId, setFamilyBeforeId] = useState(0);
+  const [falimyAfterId, setFamilyAfterId] = useState(0);
   const [locationId, setLocationId] = useState();
   const [locations, setLocations] = useState([]);
   const [days, setDays] = useState([]);
@@ -59,7 +61,7 @@ export default function AddEvent() {
   const [isEnabledAfter, setIsEnabledAfter] = useState(false);
   const toggleSwitchAfter = () =>
     setIsEnabledAfter((previousState) => !previousState);
-console.log(days)
+  console.log(days);
 
   let formatDate = (date) => {
     let [day, month, year] = date.split(".");
@@ -168,7 +170,7 @@ console.log(days)
         </TouchableOpacity>
         <Text
           style={{
-            fontSize: styles.fontSizeTitle,
+            fontSize: 16,
             fontWeight: 700,
             justifyContent: "flex-start",
           }}
@@ -199,7 +201,7 @@ console.log(days)
         {({ handleChange, handleBlur, handleSubmit, values }) => (
           <View>
             <View>
-              <Text style={{ fontSize: styles.fontSizeText, fontWeight: 700 }}>
+              <Text style={{ fontSize: 16, fontWeight: 700 }}>
                 Название события
               </Text>
               <TextInput
@@ -218,9 +220,7 @@ console.log(days)
                   onPress={() => setSelectedValue("one")}
                   color="#2688EB"
                 />
-                <Text
-                  style={{ fontSize: styles.fontSizeText, fontWeight: 700 }}
-                >
+                <Text style={{ fontSize: 16, fontWeight: 700 }}>
                   Разовое событие
                 </Text>
               </View>
@@ -231,9 +231,7 @@ console.log(days)
                   onPress={() => setSelectedValue("repeat")}
                   color="#2688EB"
                 />
-                <Text
-                  style={{ fontSize: styles.fontSizeText, fontWeight: 700 }}
-                >
+                <Text style={{ fontSize: 16, fontWeight: 700 }}>
                   Повторяющееся событие
                 </Text>
               </View>
@@ -242,6 +240,7 @@ console.log(days)
                 <View style={styles.oneEvent}>
                   <TextInput
                     style={styles.dateInput}
+                    keyboardType="numeric"
                     onChangeText={handleChange("event_date")}
                     onBlur={handleBlur("event_date")}
                     value={values.event_date}
@@ -254,10 +253,7 @@ console.log(days)
                     value={values.event_time_start}
                     placeholder="00:00"
                   />
-                  <Text style={{ marginRight: styles.marginRightElements }}>
-                    {" "}
-                    —{" "}
-                  </Text>
+                  <Text style={{ marginRight: 8 }}> — </Text>
                   <TextInput
                     style={styles.timeInput}
                     onChangeText={handleChange("event_time_finish")}
@@ -293,74 +289,84 @@ console.log(days)
               <View style={styles.family}>
                 <Text
                   style={{
-                    fontSize: styles.fontSizeText,
+                    fontSize: 16,
                     fontWeight: 700,
                     marginBottom: 10,
                   }}
                 >
                   Члены семьи
                 </Text>
-                <View
+                <ScrollView
+                  horizontal={true}
+                  showsHorizontalScrollIndicator={false}
                   style={{
                     display: "flex",
                     flexDirection: "row",
-                    justifyContent: "flex-start",
+                    marginTop: 10,
                   }}
                 >
-                  <FlatList
-                    style={styles.familyItems}
-                    horizontal={true}
-                    data={children}
-                    renderItem={({ item }) => (
-                      <TouchableOpacity onPress={() => setChildId(item.id)}>
-                        <View style={styles.familyItem}>
-                          <View
-                            style={[
-                              styles.avatar,
-                              childId == item.id && styles.click,
-                            ]}
-                          >
-                            {item.name == "Петя" ? (
-                              <Image
-                                source={require("../assets/images/Boy.png")}
-                              />
-                            ) : (
-                              <Image
-                                source={require("../assets/images/Girl.png")}
-                              />
-                            )}
-                            <Text
-                              style={{
-                                fontSize: styles.fontSizeText,
-                                paddingLeft: 10,
-                              }}
-                            >
-                              {item.name}
-                            </Text>
-                          </View>
-                        </View>
-                      </TouchableOpacity>
-                    )}
-                  />
-                  <TouchableOpacity
-                    style={styles.addButton}
-                    onPress={() => setAddFamilyModal(true)}
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "flex-start",
+                    }}
                   >
-                    <Image source={require("../assets/images/plus.png")} />
-                    <Text
-                      style={{
-                        fontSize: styles.fontSizeText,
-                      }}
+                    <FlatList
+                      style={styles.familyItems}
+                      horizontal={true}
+                      data={children}
+                      renderItem={({ item }) => (
+                        <TouchableOpacity onPress={() => setChildId(item.id)}>
+                          <View style={styles.familyItem}>
+                            <View
+                              style={[
+                                styles.avatar,
+                                childId == item.id && styles.click,
+                              ]}
+                            >
+                              {item.name == "Вася" ? (
+                                <Image
+                                  source={require("../assets/images/Boy.png")}
+                                />
+                              ) : (
+                                <Image
+                                  source={require("../assets/images/Girl.png")}
+                                />
+                              )}
+                              <Text
+                                style={{
+                                  fontSize: 16,
+                                  paddingLeft: 10,
+                                }}
+                              >
+                                {item.name}
+                              </Text>
+                            </View>
+                          </View>
+                        </TouchableOpacity>
+                      )}
+                    />
+                    <TouchableOpacity
+                      style={styles.addButton}
+                      onPress={() => setAddFamilyModal(true)}
                     >
-                      Добавить
-                    </Text>
-                  </TouchableOpacity>
-                </View>
+                      <Image source={require("../assets/images/plus.png")} />
+                      <Text
+                        style={{
+                          fontSize: 16,
+                        }}
+                      >
+                        Добавить
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </ScrollView>
               </View>
             </View>
 
             <View style={{ marginTop: 32 }}>
-              <Text style={{ fontSize: 14, fontWeight: 700 }}>
+              <Text style={{ fontSize: 16, fontWeight: 700 }}>
                 Напомнить до начала за
               </Text>
               <View
@@ -394,6 +400,7 @@ console.log(days)
                 style={{
                   display: "flex",
                   flexDirection: "row",
+                  alignItems: "center",
                   marginTop: 10,
                   marginBottom: 10,
                 }}
@@ -404,7 +411,7 @@ console.log(days)
                   onValueChange={toggleSwitchBefore}
                   value={isEnabledBefore}
                 />
-                <Text style={{ marginLeft: 10 }}>
+                <Text style={{ marginLeft: 10, fontSize: 16 }}>
                   Напомнить другому члену семьи
                 </Text>
               </View>
@@ -422,12 +429,14 @@ console.log(days)
                     showsHorizontalScrollIndicator={false}
                     data={family}
                     renderItem={({ item }) => (
-                      <TouchableOpacity onPress={() => setChildId(item.id)}>
+                      <TouchableOpacity
+                        onPress={() => setFamilyBeforeId(item.id)}
+                      >
                         <View style={styles.familyItem}>
                           <View
                             style={[
                               styles.avatar,
-                              childId == item.id && styles.click,
+                              falimyBeforeId == item.id && styles.click,
                             ]}
                           >
                             {item.name == "Петя" ? (
@@ -441,7 +450,7 @@ console.log(days)
                             )}
                             <Text
                               style={{
-                                fontSize: styles.fontSizeText,
+                                fontSize: 16,
                                 paddingLeft: 10,
                               }}
                             >
@@ -457,7 +466,7 @@ console.log(days)
             </View>
 
             <View>
-              <Text style={{ fontSize: 14, fontWeight: 700 }}>
+              <Text style={{ fontSize: 16, fontWeight: 700 }}>
                 Напомнить до окончания за
               </Text>
               <View
@@ -492,17 +501,18 @@ console.log(days)
               style={{
                 display: "flex",
                 flexDirection: "row",
+                alignItems: "center",
                 marginTop: 10,
                 marginBottom: 10,
               }}
             >
               <Switch
                 trackColor={{ false: "#EFEAEA", true: "#ADB9E3" }}
-                thumbColor={!isEnabledAfter ? "#F2F3F5" : "red"}
+                thumbColor={!isEnabledAfter ? "#F2F3F5" : "#313B97"}
                 onValueChange={toggleSwitchAfter}
                 value={isEnabledAfter}
               />
-              <Text style={{ marginLeft: 10 }}>
+              <Text style={{ marginLeft: 10, fontSize: 16 }}>
                 Напомнить другому члену семьи
               </Text>
             </View>
@@ -520,12 +530,12 @@ console.log(days)
                   showsHorizontalScrollIndicator={false}
                   data={family}
                   renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() => setChildId(item.id)}>
+                    <TouchableOpacity onPress={() => setFamilyAfterId(item.id)}>
                       <View style={styles.familyItem}>
                         <View
                           style={[
                             styles.avatar,
-                            childId == item.id && styles.click,
+                            falimyAfterId == item.id && styles.click,
                           ]}
                         >
                           {item.name == "Петя" ? (
@@ -539,7 +549,7 @@ console.log(days)
                           )}
                           <Text
                             style={{
-                              fontSize: styles.fontSizeText,
+                              fontSize: 16,
                               paddingLeft: 10,
                             }}
                           >
@@ -553,7 +563,7 @@ console.log(days)
               </View>
             )}
             <View style={{ marginTop: 16 }}>
-              <Text style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>
+              <Text style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>
                 Адрес
               </Text>
               <SelectList
@@ -562,16 +572,17 @@ console.log(days)
                 placeholder="Адрес"
                 searchPlaceholder="Найти адрес"
                 save="key"
-                boxStyles={{borderRadius: 20, borderColor: "#ADB9E3"}}
-                dropdownItemStyles={{borderRadius: 20, borderColor: "#ADB9E3"}}
+                boxStyles={{ borderRadius: 20, borderColor: "#ADB9E3" }}
+                dropdownItemStyles={{
+                  borderRadius: 20,
+                  borderColor: "#ADB9E3",
+                }}
               />
             </View>
 
             {comment && (
               <View>
-                <Text
-                  style={{ fontSize: styles.fontSizeText, fontWeight: 700 }}
-                >
+                <Text style={{ fontSize: 16, fontWeight: 700 }}>
                   Комментарий
                 </Text>
                 <TextInput
@@ -585,12 +596,15 @@ console.log(days)
             )}
 
             <TouchableOpacity
-              style={styles.buttonWhite}
+              style={[styles.buttonWhite, { marginTop: 8 }]}
               onPress={() => setAddElementsModal(true)}
             >
               <Text style={{ fontWeight: 700 }}>Добавить элемент</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonGrey} onPress={handleSubmit}>
+            <TouchableOpacity
+              style={[styles.buttonGrey, { marginBottom: 30 }]}
+              onPress={handleSubmit}
+            >
               <Text style={{ fontWeight: 700 }}>Добавить событие</Text>
             </TouchableOpacity>
           </View>

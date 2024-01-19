@@ -20,9 +20,8 @@ export let heightCategories = 40;
 
 export const styles = StyleSheet.create({
   container: {
-    paddingLeft: marginTopInsideBlocks,
-    paddingRight: marginTopInsideBlocks,
-    paddingTop: marginTopInsideBlocks,
+    padding: marginTopInsideBlocks,
+    paddingBottom: 130,
     backgroundColor: backgroundColor,
     height: "100%"
   },
@@ -220,9 +219,10 @@ export const styles = StyleSheet.create({
     display: "flex",
     justifyContent: "center",
     borderRadius: borderRadius,
-    backgroundColor: backgroundColorItems,
+    backgroundColor: backgroundColor,
     height: heightCategories,
     borderWidth: 1,
+    borderColor: backgroundColorMain,
     paddingLeft: 10,
     paddingRight: 10,
     /* marginTop: marginTopInsideBlocks, */

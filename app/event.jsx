@@ -79,8 +79,8 @@ export default function Event() {
           />
         </TouchableOpacity>
         <Text>
-          <Text style={{ fontSize: 22 }}>•</Text>{" "}
-          <Text style={{ fontSize: 22 }}>{event?.main_name}</Text>
+          <Text style={{ fontSize: 22, fontWeight: 700  }}>•</Text>{" "}
+          <Text style={{ fontSize: 22, fontWeight: 700 }}>{event?.main_name}</Text>
         </Text>
         <View style={{ display: "flex", flexDirection: "row" }}>
           <TouchableOpacity onPress={() => deleteEvent()}>
@@ -244,16 +244,18 @@ export default function Event() {
       )}
 
       {event?.event_description && (
-        <View>
+        <View style={{marginTop: 16}}>
           <Text
             style={{
-              fontSize: styles.fontSizeText,
+              fontSize: 16,
               fontWeight: 700,
             }}
           >
             Комментарий
           </Text>
-          <Text>{event?.event_description}</Text>
+          <Text style={{
+              fontSize: 16
+            }}>{event?.event_description}</Text>
         </View>
       )}
     </View>
